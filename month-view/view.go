@@ -13,15 +13,19 @@ import (
 )
 
 var (
-	TitleStyle       = lipgloss.NewStyle().Foreground(purple.Colors.Accent).Align(lipgloss.Center).Bold(true)
-	HeaderStyle      = lipgloss.NewStyle().Foreground(purple.Colors.Accent).Align(lipgloss.Center).Bold(true)
-	BorderStyle      = lipgloss.NewStyle().Foreground(purple.Colors.Muted)
-	CellStyle        = lipgloss.NewStyle().Padding(0, 1)
-	TodayCellStyle   = CellStyle.Background(purple.Colors.Muted)
-	OutsideCellStyle = CellStyle.Foreground(purple.Colors.Muted)
-	EventStyle       = lipgloss.NewStyle().Foreground(purple.Colors.Muted)
-	EventStyleHover  = lipgloss.NewStyle().Foreground(purple.Colors.Accent)
-	Notice           = lipgloss.NewStyle().Foreground(purple.Colors.Muted).Align(lipgloss.Center)
+	TitleStyle  = lipgloss.NewStyle().Foreground(purple.Colors.Accent).Align(lipgloss.Center).Bold(true)
+	HeaderStyle = lipgloss.NewStyle().Foreground(purple.Colors.Accent).Align(lipgloss.Center).Bold(true)
+	BorderStyle = lipgloss.NewStyle().Foreground(purple.Colors.Muted)
+
+	CellStyle      = lipgloss.NewStyle().Padding(0, 1)
+	TodayCellStyle = CellStyle.Background(purple.Colors.Muted)
+
+	OutsideCellStyle           = CellStyle.Foreground(purple.Colors.Muted)
+	EventStyle                 = lipgloss.NewStyle().Foreground(purple.Colors.Muted)
+	EventStyleHover            = lipgloss.NewStyle().Foreground(purple.Colors.Accent)
+	EventStyleDescriptionHover = lipgloss.NewStyle().Foreground(purple.Colors.LightGray)
+
+	Notice = lipgloss.NewStyle().Foreground(purple.Colors.Muted).Align(lipgloss.Center)
 )
 
 func (m Model) drawCalendar() string {
@@ -29,6 +33,10 @@ func (m Model) drawCalendar() string {
 
 	var hoverRow, hoverCol int
 	var todayRow, todayCol int
+
+	cellWidth := int((m.Width-1-7)/7) - 2
+	CellStyle = CellStyle.Width(cellWidth)
+	TodayCellStyle = TodayCellStyle.Width(cellWidth)
 
 	for i := 1; i <= calendar.DaysInMonth(*m.FocusMonth, *m.FocusYear); i++ {
 		if i == 1 {
@@ -89,13 +97,30 @@ func (m Model) drawCalendar() string {
 					s = EventStyleHover
 				}
 				rows[row][col] += "\n"
-				if nevents == 1 {
-					rows[row][col] += s.Render(" " + strconv.Itoa(nevents) + " event")
-				} else if nevents > 1 {
-					rows[row][col] += s.Render(" " + strconv.Itoa(nevents) + " events")
+				e := "event"
+				if cellWidth < 10 {
+					e = "󱑑"
 				}
-				if heightAvailablePerCell > 2 {
-					rows[row][col] += strings.Repeat("\n", heightAvailablePerCell-1-1) // -1 for the day number and -1 for the events notice
+				if nevents >= 1 {
+					if nevents > 1 && e == "event" {
+						e = "events"
+					}
+					rows[row][col] += s.Render(" " + strconv.Itoa(nevents) + " " + e)
+				}
+				events := m.getEvents(*m.FocusYear, *m.FocusMonth, day)
+				s = EventStyle
+				if row+1 == hoverRow && col == hoverCol {
+					s = EventStyleDescriptionHover
+				}
+				for i := 0; i < heightAvailablePerCell-2; i++ {
+					rows[row][col] += "\n"
+					if i < len(events) {
+						if len(" - "+events[i].Name) > cellWidth {
+							rows[row][col] += s.Render(" - " + events[i].Name[:cellWidth-6] + "...")
+						} else {
+							rows[row][col] += s.Render(" - " + events[i].Name)
+						}
+					}
 				}
 			}
 		}

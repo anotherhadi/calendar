@@ -1,6 +1,7 @@
 package monthview
 
 import (
+	calendar "github.com/anotherhadi/markdown-calendar"
 	"github.com/anotherhadi/purple-apps"
 	"github.com/charmbracelet/lipgloss"
 )
@@ -9,6 +10,14 @@ func (m Model) getNumberOfEvents(year, month, day int) int {
 	n := 0
 	for _, cal := range m.Calendars {
 		n += len(cal.GetEventsByDate(year, month, day))
+	}
+	return n
+}
+
+func (m Model) getEvents(year, month, day int) []calendar.Event {
+	n := []calendar.Event{}
+	for _, cal := range m.Calendars {
+		n = append(n, cal.GetEventsByDate(year, month, day)...)
 	}
 	return n
 }
