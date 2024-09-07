@@ -47,14 +47,16 @@ func (m *Model) IncrementMonth(inc int) {
 }
 
 func (m *Model) IncrementDay(inc int) {
-	*m.FocusDay += inc
-	if *m.FocusDay < 1 {
+	focusDay := *m.FocusDay
+	focusDay += inc
+	if focusDay < 1 {
 		m.IncrementMonth(-1)
-		*m.FocusDay = calendar.DaysInMonth(*m.FocusMonth, *m.FocusYear)
-	}
-	if *m.FocusDay > calendar.DaysInMonth(*m.FocusMonth, *m.FocusYear) {
+		*m.FocusDay = calendar.DaysInMonth(*m.FocusMonth, *m.FocusYear) + inc + *m.FocusDay
+	} else if focusDay > calendar.DaysInMonth(*m.FocusMonth, *m.FocusYear) {
+		*m.FocusDay = *m.FocusDay + inc - calendar.DaysInMonth(*m.FocusMonth, *m.FocusYear)
 		m.IncrementMonth(1)
-		*m.FocusDay = 1
+	} else {
+		*m.FocusDay = focusDay
 	}
 }
 
