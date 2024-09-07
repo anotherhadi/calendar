@@ -83,6 +83,7 @@ func (m Model) drawCalendar() string {
 				if rows[row][col] == "" {
 					continue
 				}
+				// If enough space is available, show events
 				day, err := strconv.Atoi(rows[row][col])
 				if todayRow == row+1 && todayCol == col {
 					day = m.CurrentDay
@@ -107,6 +108,8 @@ func (m Model) drawCalendar() string {
 					}
 					rows[row][col] += s.Render(" " + strconv.Itoa(nevents) + " " + e)
 				}
+				// If enough space is available, show event names
+				// TODO: Skip events that are finished
 				events := m.getEvents(*m.FocusYear, *m.FocusMonth, day)
 				s = EventStyle
 				if row+1 == hoverRow && col == hoverCol {
@@ -115,10 +118,10 @@ func (m Model) drawCalendar() string {
 				for i := 0; i < heightAvailablePerCell-2; i++ {
 					rows[row][col] += "\n"
 					if i < len(events) {
-						if len(" - "+events[i].Name) > cellWidth {
-							rows[row][col] += s.Render(" - " + events[i].Name[:cellWidth-6] + "...")
+						if len("- "+events[i].Name) > cellWidth {
+							rows[row][col] += s.Render(" " + events[i].Name[:cellWidth-6] + "...")
 						} else {
-							rows[row][col] += s.Render(" - " + events[i].Name)
+							rows[row][col] += s.Render(" " + events[i].Name)
 						}
 					}
 				}
