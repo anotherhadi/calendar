@@ -99,7 +99,7 @@ func (m Model) drawCalendar() string {
 				}
 				rows[row][col] += "\n"
 				e := "event"
-				if cellWidth < 10 {
+				if cellWidth < 11 {
 					e = "󱑑"
 				}
 				if nevents >= 1 {
@@ -110,19 +110,20 @@ func (m Model) drawCalendar() string {
 				}
 				// If enough space is available, show event names
 				// TODO: Skip events that are finished
+				if cellWidth <= 8 {
+					continue
+				}
 				events := m.getEvents(*m.FocusYear, *m.FocusMonth, day)
 				s = EventStyle
 				if row+1 == hoverRow && col == hoverCol {
 					s = EventStyleDescriptionHover
 				}
-				for i := 0; i < heightAvailablePerCell-2; i++ {
+				for _, e := range events {
 					rows[row][col] += "\n"
-					if i < len(events) {
-						if len("- "+events[i].Name) > cellWidth {
-							rows[row][col] += s.Render(" " + events[i].Name[:cellWidth-6] + "...")
-						} else {
-							rows[row][col] += s.Render(" " + events[i].Name)
-						}
+					if len("- "+e.Name) > cellWidth {
+						rows[row][col] += s.Render(" " + e.Name[:cellWidth-5] + "...")
+					} else {
+						rows[row][col] += s.Render(" " + e.Name)
 					}
 				}
 			}
@@ -142,9 +143,9 @@ func (m Model) drawCalendar() string {
 				return HeaderStyle
 			}
 			if row == hoverRow && col == hoverCol {
-				return TodayCellStyle
+				return TodayCellStyle.MaxHeight(heightAvailablePerCell).Height(heightAvailablePerCell)
 			}
-			return CellStyle
+			return CellStyle.MaxHeight(heightAvailablePerCell).Height(heightAvailablePerCell)
 		})
 
 	var str string

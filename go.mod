@@ -3,16 +3,16 @@ module github.com/anotherhadi/calendar
 go 1.22.5
 
 require (
-	github.com/anotherhadi/markdown-calendar v0.1.3
+	github.com/anotherhadi/markdown-calendar v0.1.4
 	github.com/anotherhadi/purple-apps v0.1.3
 	github.com/charmbracelet/bubbletea v1.1.0
+	github.com/charmbracelet/lipgloss v0.13.0
 )
 
 require (
 	dario.cat/mergo v1.0.1 // indirect
-	github.com/anotherhadi/markdown v0.2.3 // indirect
+	github.com/anotherhadi/markdown v0.2.4 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
-	github.com/charmbracelet/lipgloss v0.13.0 // indirect
 	github.com/charmbracelet/x/ansi v0.2.3 // indirect
 	github.com/charmbracelet/x/term v0.2.0 // indirect
 	github.com/erikgeiser/coninput v0.0.0-20211004153227-1c3628e74d0f // indirect
