@@ -3,7 +3,8 @@ package main
 import (
 	"time"
 
-	monthview "github.com/anotherhadi/calendar/month-view"
+	monthview "github.com/anotherhadi/calendar/month_view"
+	neweventview "github.com/anotherhadi/calendar/new_event_view"
 	calendar "github.com/anotherhadi/markdown-calendar"
 	purple "github.com/anotherhadi/purple-apps"
 )
@@ -15,9 +16,11 @@ type model struct {
 	CurrentDay, CurrentMonth, CurrentYear int
 	FocusDay, FocusMonth, FocusYear       *int
 
-	CurrentView string // "year", "month", "week", "day", "event", "new-event", "search", "edit-event"
+	CurrentView string // "year", "month", "week", "day", "event"
+	MonthModel  monthview.Model
 
-	MonthModel monthview.Model
+	IsNewEventView bool
+	NewEventModel  neweventview.Model
 }
 
 func initModel() model {
@@ -60,6 +63,8 @@ func initModel() model {
 		Height:       m.Height,
 		Calendars:    calendars,
 	}
+
+	m.NewEventModel = neweventview.InitialModel("New Event")
 
 	return m
 }

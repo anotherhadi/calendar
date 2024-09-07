@@ -14,5 +14,5 @@ func main() {
 }
 
 func (m model) Init() tea.Cmd {
-	return nil
+	return tea.Batch(m.NewEventModel.Init())
 }
