@@ -1,6 +1,11 @@
 package neweventview
 
 import (
+	"errors"
+	"regexp"
+	"strconv"
+	"strings"
+
 	"github.com/anotherhadi/purple-apps"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
@@ -9,6 +14,7 @@ import (
 
 var (
 	TitleStyle = lipgloss.NewStyle().Foreground(purple.Colors.Accent).Bold(true).Underline(true)
+	AlertStyle = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff0000"))
 
 	focusedStyle = lipgloss.NewStyle().Foreground(purple.Colors.Accent)
 	blurredStyle = lipgloss.NewStyle().Foreground(purple.Colors.Muted)
@@ -36,6 +42,7 @@ func InitialModel(title string) Model {
 	}
 
 	var t textinput.Model
+	dateFormat := "dd/mm/yyyy"
 	for i := range m.Inputs {
 		t = textinput.New()
 		t.Prompt = " "
@@ -51,9 +58,45 @@ func InitialModel(title string) Model {
 			t.PromptStyle = focusedStyle
 			t.TextStyle = focusedStyle
 		case 1:
-			m.Labels[i] = "Date"
-			t.Placeholder = "yyyy-mm-dd"
+			m.Labels[i] = "Date (" + dateFormat + ")"
+			t.Placeholder = dateFormat
 			t.CharLimit = 10
+			t.Validate = func(value string) error {
+
+				goodMatch := "08/09/2024"
+				var valueCompleted string = value
+				if len(value) != len(goodMatch) {
+					valueCompleted += goodMatch[len(value):]
+				}
+				if !regexp.MustCompile(`^\d{2}/\d{2}/\d{4}$`).MatchString(valueCompleted) {
+					return errors.New("Invalid date format: " + dateFormat + valueCompleted)
+				}
+				if value == "" {
+					return nil
+				}
+				splitted := strings.Split(value, "/")
+
+				if len(splitted) >= 1 {
+					day, _ := strconv.Atoi(splitted[0])
+					if day > 31 || day < 1 && splitted[0] != "0" {
+						return errors.New("Invalid day: " + dateFormat)
+					}
+				}
+				if len(splitted) >= 2 {
+					month, _ := strconv.Atoi(splitted[1])
+					if month > 12 || month < 1 && splitted[1] != "" {
+						return errors.New("Invalid month: " + dateFormat)
+					}
+				}
+				if len(splitted) >= 3 {
+					year, _ := strconv.Atoi(splitted[2])
+					if year < 0 {
+						return errors.New("Invalid year: " + dateFormat)
+					}
+				}
+
+				return nil
+			}
 		case 2:
 			m.Labels[i] = "Description"
 			t.Placeholder = "The event description"
@@ -149,6 +192,9 @@ func (m Model) View() string {
 		}
 		str += "\n"
 		str += m.Inputs[i].View()
+		if m.Inputs[i].Err != nil {
+			str += "\n" + AlertStyle.Render(m.Inputs[i].Err.Error())
+		}
 		if i < len(m.Inputs)-1 {
 			str += "\n\n"
 		}
