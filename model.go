@@ -64,7 +64,7 @@ func initModel() model {
 		Calendars:    calendars,
 	}
 
-	m.NewEventModel = neweventview.InitialModel("New Event")
+	m.NewEventModel = neweventview.NewModel(calendars)
 
 	return m
 }

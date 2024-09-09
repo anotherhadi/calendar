@@ -1,6 +1,8 @@
 package main
 
-import tea "github.com/charmbracelet/bubbletea"
+import (
+	tea "github.com/charmbracelet/bubbletea"
+)
 
 func (m model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
