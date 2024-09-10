@@ -1,6 +1,7 @@
 package main
 
 import (
+	neweventview "github.com/anotherhadi/calendar/new_event_view"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -11,8 +12,6 @@ func (m model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		m.Width = msg.Width
 		m.Height = msg.Height
 		m.MonthModel, _ = m.MonthModel.Update(msg)
-		msg.Height -= 6
-		msg.Width -= 10
 		m.NewEventModel, _ = m.NewEventModel.Update(msg)
 		return m, nil
 
@@ -21,19 +20,27 @@ func (m model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		case "ctrl+c":
 			return m, tea.Quit
 		case "esc":
-			if m.IsNewEventView {
-				m.IsNewEventView = false
+			if *m.IsNewEventView {
+				*m.IsNewEventView = false
 				return m, nil
 			} else {
 				return m, tea.Quit
 			}
-		case "n":
-			m.IsNewEventView = !m.IsNewEventView
-			if m.IsNewEventView {
+		case "n": // New event
+			*m.IsNewEventView = !*m.IsNewEventView
+			if *m.IsNewEventView {
+				m.NewEventModel = neweventview.NewModel(m.Calendars, m.IsNewEventView, *m.FocusDay, *m.FocusMonth, *m.FocusYear)
+				m.NewEventModel, _ = m.NewEventModel.Update(tea.WindowSizeMsg{Width: m.Width, Height: m.Height})
 				return m, tea.Batch(m.NewEventModel.Init())
 			}
+		case "t": // Go to today
+			*m.FocusDay = m.CurrentDay
+			*m.FocusMonth = m.CurrentMonth
+			*m.FocusYear = m.CurrentYear
+			return m, nil
+
 		default:
-			if m.IsNewEventView {
+			if *m.IsNewEventView {
 				m.NewEventModel, cmd = m.NewEventModel.Update(msg)
 				return m, cmd
 			}
@@ -43,7 +50,7 @@ func (m model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	default:
-		if m.IsNewEventView {
+		if *m.IsNewEventView {
 			m.NewEventModel, cmd = m.NewEventModel.Update(message)
 			return m, cmd
 		}

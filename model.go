@@ -19,7 +19,7 @@ type model struct {
 	CurrentView string // "year", "month", "week", "day", "event"
 	MonthModel  monthview.Model
 
-	IsNewEventView bool
+	IsNewEventView *bool
 	NewEventModel  neweventview.Model
 }
 
@@ -51,6 +51,7 @@ func initModel() model {
 	m.FocusDay = &focusDay
 	m.FocusMonth = &focusMonth
 	m.FocusYear = &focusYear
+	m.IsNewEventView = new(bool)
 
 	m.MonthModel = monthview.Model{
 		CurrentDay:   m.CurrentDay,
@@ -64,7 +65,6 @@ func initModel() model {
 		Calendars:    calendars,
 	}
 
-	m.NewEventModel = neweventview.NewModel(calendars)
-
+	m.NewEventModel = neweventview.NewModel(m.Calendars, m.IsNewEventView, *m.FocusDay, *m.FocusMonth, *m.FocusYear)
 	return m
 }

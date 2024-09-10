@@ -3,6 +3,8 @@ package neweventview
 import (
 	"fmt"
 	"regexp"
+	"strconv"
+	"strings"
 
 	calendar "github.com/anotherhadi/markdown-calendar"
 	"github.com/anotherhadi/purple-apps"
@@ -12,44 +14,29 @@ import (
 )
 
 type Model struct {
-	form      *huh.Form
-	Event     *calendar.Event
-	calendars []*calendar.Calendar
+	form          *huh.Form
+	Event         *calendar.Event
+	CalendarName  *string
+	calendars     []*calendar.Calendar
+	isViewed      *bool
+	Width, Height int
 }
 
+const dateFormat = "DD/MM/YYYY"
+
 var (
-	dateFormat = "dd/mm/yyyy"
 	TitleStyle = lipgloss.NewStyle().Foreground(purple.Colors.Accent).Bold(true).Underline(true)
 )
 
-func getFormTheme() *huh.Theme {
-	theme := huh.ThemeBase()
-	theme.Focused.Title = lipgloss.NewStyle().Foreground(purple.Colors.Accent)
-	theme.Blurred.Title = lipgloss.NewStyle().Foreground(purple.Colors.LightGray)
-	theme.Focused.Base = lipgloss.NewStyle().PaddingLeft(1).BorderStyle(lipgloss.ThickBorder()).BorderLeft(true).BorderForeground(purple.Colors.Accent)
-	theme.Blurred.Description = lipgloss.NewStyle().Foreground(purple.Colors.Muted)
-	theme.Focused.Description = lipgloss.NewStyle().Foreground(purple.Colors.Muted)
-	theme.Focused.TextInput.Prompt = lipgloss.NewStyle().Foreground(purple.Colors.Accent)
-	theme.Blurred.TextInput.Prompt = lipgloss.NewStyle().Foreground(purple.Colors.Muted)
-
-	theme.Focused.SelectSelector = lipgloss.NewStyle().Foreground(purple.Colors.Muted).SetString("> ")
-	theme.Focused.SelectedOption = lipgloss.NewStyle().Foreground(purple.Colors.Accent)
-	theme.Focused.UnselectedOption = lipgloss.NewStyle().Foreground(purple.Colors.Muted)
-
-	theme.Blurred.SelectSelector = lipgloss.NewStyle().Foreground(purple.Colors.Muted).SetString("> ")
-	theme.Blurred.SelectedOption = lipgloss.NewStyle().Foreground(purple.Colors.LightGray)
-	theme.Blurred.UnselectedOption = lipgloss.NewStyle().Foreground(purple.Colors.Muted)
-
-	return theme
-}
-
-func NewModel(calendars []*calendar.Calendar) Model {
+func NewModel(calendars []*calendar.Calendar, isViewed *bool, day, month, year int) Model {
 	calendarsName := make([]string, len(calendars))
 	for i, c := range calendars {
 		calendarsName[i] = c.Name
 	}
 
-	event := calendar.Event{}
+	event := &calendar.Event{}
+	calendarName := ""
+	date := fmt.Sprintf("%02d/%02d/%04d", day, month, year)
 
 	form := huh.NewForm(
 		huh.NewGroup(
@@ -57,7 +44,8 @@ func NewModel(calendars []*calendar.Calendar) Model {
 			huh.NewSelect[string]().
 				Key("calendar").
 				Options(huh.NewOptions(calendarsName...)...).
-				Title("Choose a calendar"),
+				Title("Choose a calendar").
+				Value(&calendarName),
 
 			huh.NewInput().
 				Title("Name").
@@ -72,6 +60,7 @@ func NewModel(calendars []*calendar.Calendar) Model {
 				}).
 				Title("Date").
 				Description(dateFormat).
+				Value(&date).
 				Key("date"),
 
 			// TODO: All-day event, dynamic fields for end date and time
@@ -84,7 +73,7 @@ func NewModel(calendars []*calendar.Calendar) Model {
 	form.WithWidth(0)
 	form.WithHeight(0)
 	form.WithTheme(getFormTheme())
-	return Model{form: form, Event: &event, calendars: calendars}
+	return Model{form: form, calendars: calendars, Event: event, CalendarName: &calendarName, isViewed: isViewed}
 }
 
 func (m Model) Init() tea.Cmd {
@@ -100,8 +89,10 @@ type FormSentMsg struct{}
 func (m Model) Update(message tea.Msg) (Model, tea.Cmd) {
 	switch msg := message.(type) {
 	case tea.WindowSizeMsg:
-		m.form.WithWidth(msg.Width - 10)
-		m.form.WithHeight(msg.Height - 5)
+		m.Width = msg.Width
+		m.Height = msg.Height
+		m.form.WithWidth(msg.Width - 20) // Padding * 2 + borders + margins
+		m.form.WithHeight(msg.Height - 11)
 		return m, nil
 	}
 
@@ -110,16 +101,37 @@ func (m Model) Update(message tea.Msg) (Model, tea.Cmd) {
 		m.form = f
 	}
 
-	// if m.form.State == huh.StateCompleted {
-	// 	return m, FormSent
-	// }
+	if m.form.State == huh.StateCompleted {
+		m.Event.Name = m.form.GetString("name")
+		m.Event.Description = m.form.GetString("description")
+		m.Event.StartDate.Day, _ = strconv.Atoi(strings.Split(m.form.GetString("date"), "/")[0])
+		m.Event.StartDate.Month, _ = strconv.Atoi(strings.Split(m.form.GetString("date"), "/")[1])
+		m.Event.StartDate.Year, _ = strconv.Atoi(strings.Split(m.form.GetString("date"), "/")[2])
+		for i := range m.calendars {
+			if m.calendars[i].Name == *m.CalendarName {
+				m.calendars[i].AddEvent(*m.Event)
+				_ = m.calendars[i].Write()
+				*m.isViewed = false
+				return m, nil
+			}
+		}
+	}
 
 	return m, cmd
 }
 
 func (m Model) View() string {
 	var str string
-	str += TitleStyle.Render("# New Event") + "\n\n"
-	str += m.form.View()
-	return lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(purple.Colors.Accent).Padding(1, 5).Render(str)
+
+	title := TitleStyle.Render("# New Event") + "\n\n"
+	form := m.form.View()
+	box := lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).BorderForeground(purple.Colors.Accent).
+		Padding(1, 5).
+		Render(title + form)
+
+	str += lipgloss.Place(m.Width, m.Height, lipgloss.Center, lipgloss.Center, box,
+		lipgloss.WithWhitespaceChars("/"), lipgloss.WithWhitespaceForeground(purple.Colors.Muted))
+
+	return str
 }

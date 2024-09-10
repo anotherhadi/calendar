@@ -102,6 +102,12 @@ func (m Model) drawCalendar() string {
 				if cellWidth < 11 {
 					e = "󱑑"
 				}
+				if cellWidth < 5 {
+					e = ""
+				}
+				if cellWidth < 3 {
+					continue
+				}
 				if nevents >= 1 {
 					if nevents > 1 && e == "event" {
 						e = "events"
