@@ -1,12 +1,12 @@
-package neweventview
+package style
 
 import (
 	"github.com/anotherhadi/purple-apps"
-	huh "github.com/charmbracelet/huh"
+	"github.com/charmbracelet/huh"
 	"github.com/charmbracelet/lipgloss"
 )
 
-func getFormTheme() *huh.Theme {
+func GetFormTheme() *huh.Theme {
 	theme := huh.ThemeBase()
 	theme.Focused.Title = lipgloss.NewStyle().Foreground(purple.Colors.Accent)
 	theme.Blurred.Title = lipgloss.NewStyle().Foreground(purple.Colors.LightGray)

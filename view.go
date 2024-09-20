@@ -1,13 +1,19 @@
 package main
 
+import (
+	month "github.com/anotherhadi/calendar/month_view"
+)
+
 func (m model) View() string {
-	var str string
+	var s string
+	var help string
 	if m.CurrentView == "month" {
-		str = m.MonthModel.View()
+		s = m.MonthModel.View()
+		help = m.MonthModel.Help.View(month.Keys)
+	}
+	if m.CurrentView == "new_event" {
+		s = m.NewEventModel.View()
 	}
 
-	if *m.IsNewEventView {
-		str = m.NewEventModel.View()
-	}
-	return str
+	return m.drawHelp(s, help)
 }

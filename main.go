@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "github.com/charmbracelet/bubbletea/v2"
 )
 
 func main() {
@@ -13,6 +13,6 @@ func main() {
 	}
 }
 
-func (m model) Init() tea.Cmd {
-	return tea.Batch(m.NewEventModel.Init())
+func (m model) Init() (tea.Model, tea.Cmd) {
+	return m, nil
 }

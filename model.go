@@ -1,10 +1,9 @@
 package main
 
 import (
-	"time"
-
-	monthview "github.com/anotherhadi/calendar/month_view"
-	neweventview "github.com/anotherhadi/calendar/new_event_view"
+	// neweventview "github.com/anotherhadi/calendar/new_event_view"
+	month "github.com/anotherhadi/calendar/month_view"
+	newevent "github.com/anotherhadi/calendar/new_event_view"
 	calendar "github.com/anotherhadi/markdown-calendar"
 	purple "github.com/anotherhadi/purple-apps"
 )
@@ -16,19 +15,14 @@ type model struct {
 	CurrentDay, CurrentMonth, CurrentYear int
 	FocusDay, FocusMonth, FocusYear       *int
 
-	CurrentView string // "year", "month", "week", "day", "event"
-	MonthModel  monthview.Model
+	CurrentView string // "year", "month", "week", "day", "new_event"
 
-	IsNewEventView *bool
-	NewEventModel  neweventview.Model
+	MonthModel    month.Model
+	NewEventModel newevent.Model
 }
 
-func initModel() model {
-	m := model{
-		Width:  0,
-		Height: 0,
-	}
-
+// Load calendars from ~/.config/purple.yaml
+func loadCalendars() []*calendar.Calendar {
 	calendars := []*calendar.Calendar{}
 	for _, p := range purple.Config.Calendar.Paths {
 		cal, err := calendar.Read(p)
@@ -37,34 +31,30 @@ func initModel() model {
 		}
 		calendars = append(calendars, &cal)
 	}
-	m.Calendars = calendars
+	return calendars
+}
 
-	m.CurrentView = purple.Config.Calendar.DefaultView
-
-	t := time.Now()
-	m.CurrentDay = t.Day()
-	m.CurrentMonth = int(t.Month())
-	m.CurrentYear = t.Year()
-	focusDay := m.CurrentDay
-	focusMonth := m.CurrentMonth
-	focusYear := m.CurrentYear
-	m.FocusDay = &focusDay
-	m.FocusMonth = &focusMonth
-	m.FocusYear = &focusYear
-	m.IsNewEventView = new(bool)
-
-	m.MonthModel = monthview.Model{
-		CurrentDay:   m.CurrentDay,
-		CurrentMonth: m.CurrentMonth,
-		CurrentYear:  m.CurrentYear,
-		FocusDay:     m.FocusDay,
-		FocusMonth:   m.FocusMonth,
-		FocusYear:    m.FocusYear,
-		Width:        m.Width,
-		Height:       m.Height,
-		Calendars:    calendars,
+func initModel() model {
+	m := model{
+		Width:  0,
+		Height: 0,
 	}
 
-	m.NewEventModel = neweventview.NewModel(m.Calendars, m.IsNewEventView, *m.FocusDay, *m.FocusMonth, *m.FocusYear)
+	m.Calendars = loadCalendars()
+	m.CurrentView = purple.Config.Calendar.DefaultView
+	m.CurrentDay, m.CurrentMonth, m.CurrentYear = calendar.Today()
+	focusDay, focusMonth, focusYear := m.CurrentDay, m.CurrentMonth, m.CurrentYear
+	m.FocusDay, m.FocusMonth, m.FocusYear = &focusDay, &focusMonth, &focusYear
+	m.MonthModel = month.NewModel(
+		m.CurrentDay,
+		m.CurrentMonth,
+		m.CurrentYear,
+		m.FocusDay,
+		m.FocusMonth,
+		m.FocusYear,
+		m.Calendars,
+	)
+	m.NewEventModel = newevent.NewModel(m.Calendars, "", "")
+
 	return m
 }
