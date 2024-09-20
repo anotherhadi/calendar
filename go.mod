@@ -3,9 +3,8 @@ module github.com/anotherhadi/calendar
 go 1.22.5
 
 require (
-	github.com/anotherhadi/markdown-calendar v0.1.6
+	github.com/anotherhadi/markdown-calendar v0.1.71
 	github.com/anotherhadi/purple-apps v0.1.3
-	github.com/charmbracelet/bubbles v0.20.0
 	github.com/charmbracelet/bubbles/v2 v2.0.0-alpha.1
 	github.com/charmbracelet/bubbletea/v2 v2.0.0-alpha.1
 	github.com/charmbracelet/huh v0.6.0
@@ -19,6 +18,7 @@ require (
 	github.com/atotto/clipboard v0.1.4 // indirect
 	github.com/aymanbagabas/go-osc52/v2 v2.0.1 // indirect
 	github.com/catppuccin/go v0.2.0 // indirect
+	github.com/charmbracelet/bubbles v0.20.0 // indirect
 	github.com/charmbracelet/bubbletea v1.1.1 // indirect
 	github.com/charmbracelet/x/exp/strings v0.0.0-20240722160745-212f7b056ed0 // indirect
 	github.com/charmbracelet/x/term v0.2.0 // indirect
