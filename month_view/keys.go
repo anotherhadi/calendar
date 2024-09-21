@@ -15,6 +15,7 @@ type keyMap struct {
 	DayView       key.Binding
 	WeekView      key.Binding
 	YearView      key.Binding
+	Today         key.Binding
 
 	Help key.Binding
 	Quit key.Binding
@@ -26,7 +27,7 @@ func (k keyMap) ShortHelp() []key.Binding {
 
 func (k keyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
-		{k.PreviousDay, k.PreviousMonth, k.NewEvent},
+		{k.PreviousDay, k.PreviousMonth, k.NewEvent, k.Today},
 		{k.NextWeek, k.NextYear, k.DayView, k.Quit},
 		{k.PreviousWeek, k.PreviousYear, k.WeekView, k.Help},
 		{k.NextDay, k.NextMonth, k.YearView},
@@ -81,6 +82,10 @@ var Keys = keyMap{
 	YearView: key.NewBinding(
 		key.WithKeys("y"),
 		key.WithHelp("y", "year view"),
+	),
+	Today: key.NewBinding(
+		key.WithKeys("t"),
+		key.WithHelp("t", "today"),
 	),
 
 	Help: key.NewBinding(

@@ -33,7 +33,11 @@ func (m model) Update(message tea.Msg) (tea.Model, tea.Cmd) {
 
 	case utils.ChangeFocusViewMsg:
 		if msg.View == "new_event" {
-			m.NewEventModel = newevent.NewModel(m.Calendars, m.View(), m.CurrentView)
+			m.NewEventModel = newevent.NewModel(&m.Calendar, m.View(), m.CurrentView)
+			m.CurrentView = msg.View
+			var cmd tea.Cmd
+			m.NewEventModel, cmd = m.NewEventModel.Init()
+			return m, cmd
 		}
 		m.CurrentView = msg.View
 		return m, nil

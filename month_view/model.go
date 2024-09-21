@@ -10,7 +10,7 @@ type Model struct {
 	currentDay, currentMonth, currentYear int
 	focusDay, focusMonth, focusYear       *int
 
-	calendars []*calendar.Calendar
+	calendar *calendar.Calendar
 
 	keys          keyMap
 	Help          help.Model
@@ -20,7 +20,7 @@ type Model struct {
 func NewModel(
 	currentDay, currentMonth, currentYear int,
 	focusDay, focusMonth, focusYear *int,
-	calendars []*calendar.Calendar,
+	calendar *calendar.Calendar,
 ) Model {
 	help := help.New()
 	help.Styles = style.GetHelpStyles()
@@ -31,7 +31,7 @@ func NewModel(
 		focusDay:     focusDay,
 		focusMonth:   focusMonth,
 		focusYear:    focusYear,
-		calendars:    calendars,
+		calendar:     calendar,
 
 		keys:   Keys,
 		Help:   help,

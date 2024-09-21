@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/anotherhadi/calendar/style"
+	"github.com/anotherhadi/calendar/utils"
 	calendar "github.com/anotherhadi/markdown-calendar"
 	"github.com/anotherhadi/purple-apps"
 	"github.com/charmbracelet/lipgloss"
@@ -43,17 +44,18 @@ func (m Model) drawCalendar() string {
 		(m.height - 1 - 1 - 3 - len(rows)) / len(rows),
 	) // 1 for title, 1 for the notice, 3 for header
 
+	calendars := calendar.GetPurpleCalendars()
+	eventColors := make(map[string]string, len(calendars))
+	for i := range calendars {
+		eventColors[calendars[i].Name] = calendars[i].EventColor
+	}
+
 	if cellHeight > 1 {
 		for row := range rows {
-			for col := range row {
+			for col := range rows[row] {
 				day, _ := strconv.Atoi(rows[row][col])
 
-				nevents := calendar.GetNumberOfEventsByDate(
-					*m.focusYear,
-					*m.focusMonth,
-					day,
-					ptrCalendarsToCalendars(m.calendars),
-				)
+				nevents := len(m.calendar.GetEventsByDate(*m.focusYear, *m.focusMonth, day))
 				rows[row][col] += "\n"
 
 				if nevents < 1 {
@@ -65,43 +67,41 @@ func (m Model) drawCalendar() string {
 				s = style.EventStyle
 				if row+1 == hoverRow && col == hoverCol {
 					s = s.UnsetForeground().Foreground(purple.Colors.Accent)
+					s = s.UnsetBackground().Background(purple.Colors.Muted)
 				}
-				var e string
-				if cellWidth >= 11 {
-					e = "event"
-					if nevents > 1 {
-						e += "s"
-					}
-				} else if cellWidth >= 5 {
-					e = "󱑑"
-				} else {
-					e = ""
-				}
-				rows[row][col] += s.Render(" " + strconv.Itoa(nevents) + " " + e)
 
 				// TODO: Skip events that are finished
-				if cellWidth <= 8 {
-					continue
-				}
+				events := m.calendar.GetEventsByDate(*m.focusYear, *m.focusMonth, day)
 
-				events := calendar.GetEventsByDate(
-					*m.focusYear,
-					*m.focusMonth,
-					day,
-					ptrCalendarsToCalendars(m.calendars),
-				)
-
-				if row+1 == hoverRow && col == hoverCol {
-					s = s.UnsetForeground().Foreground(purple.Colors.LightGray)
-				}
-
-				for _, e := range events {
-					rows[row][col] += "\n"
-					if len("- "+e.Name) > cellWidth {
-						rows[row][col] += s.Render(" " + e.Name[:cellWidth-5] + "...")
-					} else {
-						rows[row][col] += s.Render(" " + e.Name)
+				for i, e := range events {
+					if i >= cellHeight-2 {
+						remaining := nevents - i
+						if remaining != 1 {
+							rows[row][col] += s.Foreground(purple.Colors.Gray).
+								Render("◖")
+							rows[row][col] += s.Background(purple.Colors.Gray).
+								Foreground(purple.GetFgColor(purple.Colors.Gray)).
+								Width(cellWidth - 2).MaxHeight(1).Align(lipgloss.Center).
+								Render(utils.TruncateString("+"+strconv.Itoa(remaining), cellWidth-2))
+							rows[row][col] += s.Foreground(purple.Colors.Gray).
+								Render("◗")
+							rows[row][col] += "\n"
+							break
+						}
 					}
+
+					hour := strconv.Itoa(e.StartDate.Hour)
+					minute := strconv.Itoa(e.StartDate.Minute)
+
+					rows[row][col] += s.Foreground(lipgloss.Color(eventColors[e.CalendarName])).
+						Render("◖")
+					rows[row][col] += s.Background(lipgloss.Color(eventColors[e.CalendarName])).
+						Foreground(purple.GetFgColor(lipgloss.Color(eventColors[e.CalendarName]))).
+						Width(cellWidth - 2).MaxHeight(1).
+						Render(utils.TruncateString(hour+":"+minute+" "+e.Name, cellWidth-2))
+					rows[row][col] += s.Foreground(lipgloss.Color(eventColors[e.CalendarName])).
+						Render("◗")
+					rows[row][col] += "\n"
 				}
 			}
 		}
@@ -143,7 +143,7 @@ func (m Model) drawTitle() string {
 
 func (m Model) drawNotice() string {
 	return style.Notice.Width(m.width).
-		Render(fmt.Sprintf(" %d events this month", calendar.GetNumberOfEventsInMonth(*m.focusYear, *m.focusMonth, ptrCalendarsToCalendars(m.calendars))))
+		Render(fmt.Sprintf(" %d events this month", len(m.calendar.GetEventsByMonth(*m.focusYear, *m.focusMonth))))
 }
 
 func (m Model) View() string {

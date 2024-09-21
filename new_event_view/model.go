@@ -10,7 +10,7 @@ import (
 )
 
 type Model struct {
-	calendars []*calendar.Calendar
+	calendars *calendar.Calendar
 	form      *huh.Form
 
 	background   string
@@ -21,26 +21,18 @@ type Model struct {
 
 const dateFormat = "DD/MM/YYYY"
 
-func getCalendarsName(calendars []*calendar.Calendar) []string {
-	calendarsNames := make([]string, len(calendars))
-	for i, c := range calendars {
-		calendarsNames[i] = c.Name
-	}
-	return calendarsNames
-}
-
 func NewModel(
-	calendars []*calendar.Calendar,
+	calendars *calendar.Calendar,
 	background string,
 	previousView string,
 ) Model {
 	form := huh.NewForm(
 		huh.NewGroup(
 			// TODO: make this one optional if there are only 1 calendar
-			huh.NewSelect[string]().
-				Key("calendar").
-				Options(huh.NewOptions(getCalendarsName(calendars)...)...).
-				Title("Choose a calendar"),
+			// huh.NewSelect[string]().
+			// 	Key("calendar").
+			// 	Options(huh.NewOptions(calendar.GetCalendarsNames(utils.PtrCalendarsToCalendars(calendar.GetPurpleCalendars()))...)...).
+			// 	Title("Choose a calendar"),
 
 			huh.NewInput().
 				Title("Name").

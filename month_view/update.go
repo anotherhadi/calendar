@@ -39,6 +39,8 @@ func (m Model) Update(message tea.Msg) (Model, tea.Cmd) {
 			return m, utils.ChangeFocusViewCmd("week")
 		case key.Matches(msg, m.keys.YearView):
 			return m, utils.ChangeFocusViewCmd("year")
+		case key.Matches(msg, m.keys.Today):
+			*m.focusDay, *m.focusMonth, *m.focusYear = m.currentDay, m.currentMonth, m.currentYear
 		case key.Matches(msg, m.keys.Help):
 			m.Help.ShowAll = !m.Help.ShowAll
 		}

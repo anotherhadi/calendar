@@ -7,14 +7,6 @@ import (
 	calendar "github.com/anotherhadi/markdown-calendar"
 )
 
-func ptrCalendarsToCalendars(ptrCalendars []*calendar.Calendar) []calendar.Calendar {
-	var calendars []calendar.Calendar
-	for _, c := range ptrCalendars {
-		calendars = append(calendars, *c)
-	}
-	return calendars
-}
-
 // getHeaders returns the headers for the month view depending on the width of the terminal
 func getHeaders(width int) []string {
 	var headers []string
