@@ -3,6 +3,7 @@ package month
 import (
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/anotherhadi/calendar/style"
@@ -39,6 +40,8 @@ func (m Model) drawCalendar() string {
 	}
 	rows = m.mutedNextDays(rows)
 
+	*m.rawCalendar = rows
+
 	cellWidth := int((m.width-1-7)/7) - 2
 	cellHeight := int(
 		(m.height - 1 - 1 - 3 - len(rows)) / len(rows),
@@ -54,6 +57,11 @@ func (m Model) drawCalendar() string {
 		for row := range rows {
 			for col := range rows[row] {
 				day, _ := strconv.Atoi(rows[row][col])
+				if row == 0 && day > 7 {
+					continue
+				} else if row == len(rows)-1 && day < 7 {
+					continue
+				}
 
 				nevents := len(m.calendar.GetEventsByDate(*m.focusYear, *m.focusMonth, day))
 				rows[row][col] += "\n"
@@ -90,15 +98,12 @@ func (m Model) drawCalendar() string {
 						}
 					}
 
-					hour := strconv.Itoa(e.StartDate.Hour)
-					minute := strconv.Itoa(e.StartDate.Minute)
-
 					rows[row][col] += s.Foreground(lipgloss.Color(eventColors[e.CalendarName])).
 						Render("◖")
 					rows[row][col] += s.Background(lipgloss.Color(eventColors[e.CalendarName])).
 						Foreground(purple.GetFgColor(lipgloss.Color(eventColors[e.CalendarName]))).
 						Width(cellWidth - 2).MaxHeight(1).
-						Render(utils.TruncateString(hour+":"+minute+" "+e.Name, cellWidth-2))
+						Render(utils.TruncateString(drawEvent(e), cellWidth-2))
 					rows[row][col] += s.Foreground(lipgloss.Color(eventColors[e.CalendarName])).
 						Render("◗")
 					rows[row][col] += "\n"
@@ -120,14 +125,19 @@ func (m Model) drawCalendar() string {
 				return style.TitleStyle
 			}
 			var s lipgloss.Style
+			day, _ := strconv.Atoi(strings.TrimSuffix(rows[row-1][col], "\n"))
 			if row == hoverRow && col == hoverCol {
 				s = style.CellStyleHover
+			} else if row == 1 && day > 7 {
+				s = style.OutsideCellStyle
+			} else if row == len(rows) && day < 7 {
+				s = style.OutsideCellStyle
 			} else {
 				s = style.CellStyle
 			}
 
 			if row == todayRow && col == todayCol {
-				s = s.UnsetForeground().Foreground(purple.Colors.Accent).SetString("󰃭")
+				s = s.UnsetForeground().Foreground(purple.Colors.Accent).SetString(utils.TodayIcon)
 			}
 
 			return s.MaxHeight(cellHeight).Height(cellHeight).Width(cellWidth)
@@ -136,14 +146,26 @@ func (m Model) drawCalendar() string {
 	return t.Render() + "\n"
 }
 
+func drawEvent(event calendar.Event) string {
+	prefix := ""
+	if event.AllDay {
+		prefix = utils.AllDayIcon + " | "
+	} else {
+		prefix = fmt.Sprintf("%02d:%02d | ", event.StartDate.Hour, event.StartDate.Minute)
+	}
+
+	return prefix + event.Name
+}
+
 func (m Model) drawTitle() string {
 	return style.TitleStyle.Width(m.width).
-		Render(fmt.Sprintf("󰸗 %s %d", time.Month(*m.focusMonth).String(), *m.focusYear)) + "\n"
+		Render(fmt.Sprintf(utils.MonthIcon+" %s %d", time.Month(*m.focusMonth).String(), *m.focusYear)) +
+		"\n"
 }
 
 func (m Model) drawNotice() string {
 	return style.Notice.Width(m.width).
-		Render(fmt.Sprintf(" %d events this month", len(m.calendar.GetEventsByMonth(*m.focusYear, *m.focusMonth))))
+		Render(fmt.Sprintf(utils.NoticeIcon+" %d events this month", len(m.calendar.GetEventsByMonth(*m.focusYear, *m.focusMonth))))
 }
 
 func (m Model) View() string {

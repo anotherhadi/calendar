@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	p := tea.NewProgram(initModel(), tea.WithAltScreen())
+	p := tea.NewProgram(initModel(), tea.WithAltScreen(), tea.WithMouseCellMotion())
 	if _, err := p.Run(); err != nil {
 		log.Fatal(err)
 	}

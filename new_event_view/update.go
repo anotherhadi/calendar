@@ -2,7 +2,9 @@ package newevent
 
 import (
 	"github.com/anotherhadi/calendar/utils"
+	oldTea "github.com/charmbracelet/bubbletea"
 	tea "github.com/charmbracelet/bubbletea/v2"
+
 	"github.com/charmbracelet/huh"
 )
 
@@ -12,10 +14,11 @@ func (m Model) Update(message tea.Msg) (Model, tea.Cmd) {
 		m.width = msg.Width
 		m.height = msg.Height
 		m.form.WithWidth(msg.Width)
-		m.form.WithHeight(msg.Height - 3)
-		return m, nil
+		m.form.WithHeight(msg.Height - 4)
+		// return m, nil
 	}
 
+	var cmd oldTea.Cmd
 	form, cmd := m.form.Update(message)
 	if f, ok := form.(*huh.Form); ok {
 		m.form = f

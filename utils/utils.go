@@ -24,6 +24,9 @@ func TruncateString(s string, n int) string {
 	if len(s) <= n {
 		return s
 	}
+	if n <= 3 {
+		return ""
+	}
 	return s[:n-3] + "..."
 }
 

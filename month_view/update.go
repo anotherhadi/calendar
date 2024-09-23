@@ -13,6 +13,42 @@ func (m Model) Update(message tea.Msg) (Model, tea.Cmd) {
 		m.width = msg.Width
 		m.height = msg.Height
 
+	// case tea.MouseMsg:
+	// 	mouse := msg.Mouse()
+	// 	if len(*m.rawCalendar) == 0 {
+	// 		return m, nil
+	// 	}
+	// 	switch msg := msg.(type) {
+	// 	case tea.MouseClickMsg:
+	// 		switch msg.Button {
+	// 		case tea.MouseLeft:
+	// 			x := mouse.X - 1
+	// 			y := mouse.Y - 4
+	// 			calWidth := m.width - 2                                // ignore left & right borders
+	// 			calHeight := strings.Count(m.drawCalendar(), "\n") - 4 // ignore top & bottom borders & headers
+	// 			if x < 0 || x > calWidth || y < 0 || y > calHeight {
+	// 				return m, nil
+	// 			}
+	//
+	// 			// Calculate the day clicked
+	//
+	// 			cellWidth := int((calWidth - 7) / 7)
+	// 			cellHeight := int(
+	// 				(calHeight - len(*m.rawCalendar)) / len(*m.rawCalendar),
+	// 			)
+	//
+	// 			colClicked := int(x / (cellWidth))
+	// 			rowClicked := int(y / (cellHeight))
+	//
+	// 			// rowClicked := int(y / (calHeight / (len(*m.rawCalendar) - 1)))
+	// 			// colClicked := int(x / ((calWidth / 7) + 1))
+	// 			// dayClicked, _ := strconv.Atoi((*m.rawCalendar)[rowClicked][colClicked])
+	// 			// *m.focusDay = dayClicked
+	// 			*m.msg = fmt.Sprintf("row:%d col:%d", rowClicked, colClicked)
+	//
+	// 			return m, nil
+	// 		}
+	// 	}
 	case tea.KeyMsg:
 		switch {
 		case key.Matches(msg, m.keys.PreviousWeek):

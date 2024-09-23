@@ -3,7 +3,6 @@ package month
 import (
 	"strconv"
 
-	"github.com/anotherhadi/calendar/style"
 	calendar "github.com/anotherhadi/markdown-calendar"
 )
 
@@ -28,17 +27,15 @@ func (m Model) mutedPreviousDays(rows [][]string) [][]string {
 	for j := 0; j < calendar.DayOfWeek(1, *m.focusMonth, *m.focusYear); j++ {
 		tmp = append(
 			tmp,
-			style.OutsideCellStyle.Render(
-				strconv.Itoa(
-					calendar.DaysInMonth(
-						*m.focusMonth-1,
-						*m.focusYear,
-					)-calendar.DayOfWeek(
-						1,
-						*m.focusMonth,
-						*m.focusYear,
-					)+j+1,
-				),
+			strconv.Itoa(
+				calendar.DaysInMonth(
+					*m.focusMonth-1,
+					*m.focusYear,
+				)-calendar.DayOfWeek(
+					1,
+					*m.focusMonth,
+					*m.focusYear,
+				)+j+1,
 			),
 		)
 	}
@@ -52,7 +49,7 @@ func (m Model) mutedNextDays(rows [][]string) [][]string {
 	for i := 1; len(rows[len(rows)-1]) < 7; i++ {
 		rows[len(rows)-1] = append(
 			rows[len(rows)-1],
-			style.OutsideCellStyle.Render(strconv.Itoa(i)),
+			strconv.Itoa(i),
 		)
 	}
 	return rows
