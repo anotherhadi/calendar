@@ -1,4 +1,4 @@
-package month
+package week
 
 import "github.com/charmbracelet/bubbles/v2/key"
 
@@ -13,7 +13,7 @@ type keyMap struct {
 	NextYear      key.Binding
 	NewEvent      key.Binding
 	DayView       key.Binding
-	WeekView      key.Binding
+	MonthView     key.Binding
 	YearView      key.Binding
 	Today         key.Binding
 
@@ -29,7 +29,7 @@ func (k keyMap) FullHelp() [][]key.Binding {
 	return [][]key.Binding{
 		{k.PreviousDay, k.PreviousMonth, k.NewEvent, k.Today},
 		{k.NextWeek, k.NextYear, k.DayView, k.Quit},
-		{k.PreviousWeek, k.PreviousYear, k.WeekView, k.Help},
+		{k.PreviousWeek, k.PreviousYear, k.MonthView, k.Help},
 		{k.NextDay, k.NextMonth, k.YearView},
 	}
 }
@@ -75,9 +75,9 @@ var Keys = keyMap{
 		key.WithKeys("d"),
 		key.WithHelp("d", "day view"),
 	),
-	WeekView: key.NewBinding(
-		key.WithKeys("w"),
-		key.WithHelp("w", "week view"),
+	MonthView: key.NewBinding(
+		key.WithKeys("m"),
+		key.WithHelp("m", "month view"),
 	),
 	YearView: key.NewBinding(
 		key.WithKeys("y"),

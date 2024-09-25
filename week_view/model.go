@@ -1,4 +1,4 @@
-package month
+package week
 
 import (
 	"github.com/anotherhadi/calendar/style"

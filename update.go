@@ -10,6 +10,7 @@ func (m model) UpdateSize(msg tea.WindowSizeMsg) (model, tea.Cmd) {
 	m.Width = msg.Width
 	m.Height = msg.Height
 	m.MonthModel, _ = m.MonthModel.Update(msg)
+	m.WeekModel, _ = m.WeekModel.Update(msg)
 	m.NewEventModel, _ = m.NewEventModel.Update(msg)
 	return m, nil
 }
@@ -19,6 +20,8 @@ func (m model) UpdateFocusedView(message tea.Msg) (model, tea.Cmd) {
 	switch m.CurrentView {
 	case "month":
 		m.MonthModel, cmd = m.MonthModel.Update(message)
+	case "week":
+		m.WeekModel, cmd = m.WeekModel.Update(message)
 	case "new_event":
 		m.NewEventModel, cmd = m.NewEventModel.Update(message)
 	}

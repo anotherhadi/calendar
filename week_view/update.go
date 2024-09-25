@@ -1,4 +1,4 @@
-package month
+package week
 
 import (
 	"github.com/anotherhadi/calendar/utils"
@@ -35,8 +35,8 @@ func (m Model) Update(message tea.Msg) (Model, tea.Cmd) {
 			return m, utils.ChangeFocusViewCmd("new_event")
 		case key.Matches(msg, m.keys.DayView):
 			return m, utils.ChangeFocusViewCmd("day")
-		case key.Matches(msg, m.keys.WeekView):
-			return m, utils.ChangeFocusViewCmd("week")
+		case key.Matches(msg, m.keys.MonthView):
+			return m, utils.ChangeFocusViewCmd("month")
 		case key.Matches(msg, m.keys.YearView):
 			return m, utils.ChangeFocusViewCmd("year")
 		case key.Matches(msg, m.keys.Today):

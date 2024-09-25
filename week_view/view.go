@@ -1,4 +1,4 @@
-package month
+package week
 
 import (
 	"fmt"
@@ -14,20 +14,15 @@ import (
 	"github.com/charmbracelet/lipgloss/table"
 )
 
-func (m Model) drawCalendar() string {
+func (m Model) drawWeek() string {
 	var rows [][]string = [][]string{}
-	var hoverRow, hoverCol, todayRow, todayCol int
+	var hoverCol, hoverRow int
 
 	rows = m.mutedPreviousDays(rows)
 	for i := 1; i <= calendar.DaysInMonth(*m.focusMonth, *m.focusYear); i++ {
 		if i == *m.focusDay {
-			hoverRow = len(rows)
 			hoverCol = len(rows[len(rows)-1])
-		}
-
-		if i == m.currentDay && *m.focusMonth == m.currentMonth && *m.focusYear == m.currentYear {
-			todayRow = len(rows)
-			todayCol = len(rows[len(rows)-1])
+			hoverRow = len(rows)
 		}
 
 		rows[len(rows)-1] = append(rows[len(rows)-1], strconv.Itoa(i))
@@ -42,7 +37,7 @@ func (m Model) drawCalendar() string {
 
 	cellWidth := int((m.width-1-7)/7) - 2
 	cellHeight := int(
-		(m.height - 1 - 1 - 3 - len(rows)) / len(rows),
+		(m.height - 1 - 1 - 3 - 1),
 	) // 1 for title, 1 for the notice, 3 for header
 
 	calendars := calendar.GetPurpleCalendars()
@@ -62,7 +57,7 @@ func (m Model) drawCalendar() string {
 				}
 
 				nevents := len(m.calendar.GetEventsByDate(*m.focusYear, *m.focusMonth, day))
-				rows[row][col] += "\n"
+				rows[row][col] += "\n\n"
 
 				if nevents < 1 {
 					continue
@@ -82,8 +77,14 @@ func (m Model) drawCalendar() string {
 				// TODO: Skip events that are finished if not enough space to show all
 				events := m.calendar.GetEventsByDate(*m.focusYear, *m.focusMonth, day)
 
+				eventsSpacing := 1
+				if cellHeight >= 16 {
+					eventsSpacing = 2
+				}
+
+				// 2 Rows instead
 				for i, e := range events {
-					if i >= cellHeight-2 {
+					if i*eventsSpacing >= cellHeight-3-(eventsSpacing-1) {
 						remaining := nevents - i
 						if remaining != 1 {
 							rows[row][col] += s.Foreground(purple.Colors.Gray).
@@ -94,7 +95,7 @@ func (m Model) drawCalendar() string {
 								Render(utils.TruncateString("+"+strconv.Itoa(remaining), cellWidth-2))
 							rows[row][col] += s.Foreground(purple.Colors.Gray).
 								Render("◗")
-							rows[row][col] += "\n"
+							rows[row][col] += strings.Repeat("\n", eventsSpacing)
 							break
 						}
 					}
@@ -107,7 +108,7 @@ func (m Model) drawCalendar() string {
 						Render(utils.TruncateString(drawEvent(e), cellWidth-2))
 					rows[row][col] += s.Foreground(lipgloss.Color(eventColors[e.CalendarName])).
 						Render("◗")
-					rows[row][col] += "\n"
+					rows[row][col] += strings.Repeat("\n", eventsSpacing)
 				}
 			}
 		}
@@ -119,25 +120,26 @@ func (m Model) drawCalendar() string {
 		BorderRow(true).
 		BorderHeader(true).
 		Headers(getHeaders(m.width)...).
-		Rows(rows...).
+		Rows(rows[hoverRow-1]).
 		Width(m.width).Height(m.height - 2).
 		StyleFunc(func(row, col int) lipgloss.Style {
 			if row == 0 {
 				return style.TitleStyle
 			}
 			var s lipgloss.Style
-			day, _ := strconv.Atoi(strings.Split(rows[row-1][col], "\n")[0])
-			if row == hoverRow && col == hoverCol {
+			day, _ := strconv.Atoi(strings.Split(rows[hoverRow-1][col], "\n")[0])
+			if col == hoverCol {
 				s = style.CellStyleHover
-			} else if row == 1 && day > 7 {
+			} else if hoverRow == 1 && day > 7 {
 				s = style.OutsideCellStyle
-			} else if row == len(rows) && day < 7 {
+			} else if hoverRow == len(rows) && day < 7 {
 				s = style.OutsideCellStyle
 			} else {
 				s = style.CellStyle
 			}
 
-			if row == todayRow && col == todayCol {
+			if day == m.currentDay && *m.focusMonth == m.currentMonth &&
+				*m.focusYear == m.currentYear {
 				s = s.UnsetForeground().Foreground(purple.Colors.Accent).SetString(utils.TodayIcon)
 			}
 
@@ -172,7 +174,7 @@ func (m Model) drawNotice() string {
 func (m Model) View() string {
 	var str string
 	str += m.drawTitle()
-	str += m.drawCalendar()
+	str += m.drawWeek()
 	str += m.drawNotice()
 	return lipgloss.NewStyle().Height(m.height).MaxHeight(m.height).Width(m.width).Render(str)
 }

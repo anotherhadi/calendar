@@ -4,7 +4,7 @@ go 1.22.5
 
 require (
 	github.com/anotherhadi/markdown-calendar v0.1.73
-	github.com/anotherhadi/purple-apps v0.1.3
+	github.com/anotherhadi/purple-apps v0.1.34
 	github.com/charmbracelet/bubbles/v2 v2.0.0-alpha.1
 	github.com/charmbracelet/bubbletea v1.1.1
 	github.com/charmbracelet/bubbletea/v2 v2.0.0-alpha.1
