@@ -63,6 +63,7 @@ func initModel() model {
 		m.FocusDay,
 		m.FocusMonth,
 		m.FocusYear,
+		&m.Calendar,
 	)
 	m.NewEventModel = newevent.NewModel(&m.Calendar, "", "")
 

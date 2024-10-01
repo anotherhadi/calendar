@@ -2,12 +2,15 @@ package year
 
 import (
 	"github.com/anotherhadi/calendar/style"
+	calendar "github.com/anotherhadi/markdown-calendar"
 	"github.com/charmbracelet/bubbles/v2/help"
 )
 
 type Model struct {
 	currentDay, currentMonth, currentYear int
 	focusDay, focusMonth, focusYear       *int
+
+	calendar *calendar.Calendar
 
 	keys          keyMap
 	Help          help.Model
@@ -17,6 +20,7 @@ type Model struct {
 func NewModel(
 	currentDay, currentMonth, currentYear int,
 	focusDay, focusMonth, focusYear *int,
+	calendar *calendar.Calendar,
 ) Model {
 	help := help.New()
 	help.Styles = style.GetHelpStyles()
@@ -28,6 +32,8 @@ func NewModel(
 		focusDay:     focusDay,
 		focusMonth:   focusMonth,
 		focusYear:    focusYear,
+
+		calendar: calendar,
 
 		keys:   Keys,
 		Help:   help,
