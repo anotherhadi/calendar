@@ -162,7 +162,7 @@ func drawEvent(event calendar.Event) string {
 
 func (m Model) drawTitle() string {
 	return style.TitleStyle.Width(m.width).
-		Render(fmt.Sprintf(utils.MonthIcon+" %s %d", time.Month(*m.focusMonth).String(), *m.focusYear)) +
+		Render(fmt.Sprintf(utils.WeekIcon+" %s %d", time.Month(*m.focusMonth).String(), *m.focusYear)) +
 		"\n"
 }
 

@@ -86,14 +86,9 @@ func (m Model) drawCalendar() string {
 					if i >= cellHeight-2 {
 						remaining := nevents - i
 						if remaining != 1 {
-							rows[row][col] += s.Foreground(purple.Colors.Gray).
-								Render("◖")
-							rows[row][col] += s.Background(purple.Colors.Gray).
-								Foreground(purple.GetFgColor(purple.Colors.Gray)).
+							rows[row][col] += s.Foreground(purple.Colors.LightGray).
 								Width(cellWidth - 2).MaxHeight(1).Align(lipgloss.Center).
 								Render(utils.TruncateString("+"+strconv.Itoa(remaining), cellWidth-2))
-							rows[row][col] += s.Foreground(purple.Colors.Gray).
-								Render("◗")
 							rows[row][col] += "\n"
 							break
 						}

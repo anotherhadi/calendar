@@ -1,12 +1,11 @@
 package main
 
 import (
-	// neweventview "github.com/anotherhadi/calendar/new_event_view"
-
 	month "github.com/anotherhadi/calendar/month_view"
 	newevent "github.com/anotherhadi/calendar/new_event_view"
 	"github.com/anotherhadi/calendar/utils"
 	week "github.com/anotherhadi/calendar/week_view"
+	year "github.com/anotherhadi/calendar/year_view"
 	calendar "github.com/anotherhadi/markdown-calendar"
 	purple "github.com/anotherhadi/purple-apps"
 )
@@ -22,6 +21,7 @@ type model struct {
 
 	MonthModel    month.Model
 	WeekModel     week.Model
+	YearModel     year.Model
 	NewEventModel newevent.Model
 }
 
@@ -55,6 +55,14 @@ func initModel() model {
 		m.FocusMonth,
 		m.FocusYear,
 		&m.Calendar,
+	)
+	m.YearModel = year.NewModel(
+		m.CurrentDay,
+		m.CurrentMonth,
+		m.CurrentYear,
+		m.FocusDay,
+		m.FocusMonth,
+		m.FocusYear,
 	)
 	m.NewEventModel = newevent.NewModel(&m.Calendar, "", "")
 

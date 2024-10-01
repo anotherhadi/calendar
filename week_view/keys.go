@@ -68,12 +68,12 @@ var Keys = keyMap{
 		key.WithHelp("J", "next year"),
 	),
 	NewEvent: key.NewBinding(
-		key.WithKeys("enter"),
-		key.WithHelp("enter", "new event"),
+		key.WithKeys("n"),
+		key.WithHelp("n", "new event"),
 	),
 	DayView: key.NewBinding(
-		key.WithKeys("d"),
-		key.WithHelp("d", "day view"),
+		key.WithKeys("d", "enter"),
+		key.WithHelp("d/󱞥", "day view"),
 	),
 	MonthView: key.NewBinding(
 		key.WithKeys("m"),

@@ -3,6 +3,7 @@ package main
 import (
 	month "github.com/anotherhadi/calendar/month_view"
 	week "github.com/anotherhadi/calendar/week_view"
+	year "github.com/anotherhadi/calendar/year_view"
 )
 
 func (m model) View() string {
@@ -15,6 +16,10 @@ func (m model) View() string {
 	if m.CurrentView == "week" {
 		s = m.WeekModel.View()
 		help = m.WeekModel.Help.View(week.Keys)
+	}
+	if m.CurrentView == "year" {
+		s = m.YearModel.View()
+		help = m.YearModel.Help.View(year.Keys)
 	}
 	if m.CurrentView == "new_event" {
 		s = m.NewEventModel.View()
