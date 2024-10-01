@@ -9,19 +9,17 @@ import (
 func (m model) View() string {
 	var s string
 	var help string
-	if m.CurrentView == "month" {
+	switch m.CurrentView {
+	case "month":
 		s = m.MonthModel.View()
 		help = m.MonthModel.Help.View(month.Keys)
-	}
-	if m.CurrentView == "week" {
+	case "week":
 		s = m.WeekModel.View()
 		help = m.WeekModel.Help.View(week.Keys)
-	}
-	if m.CurrentView == "year" {
+	case "year":
 		s = m.YearModel.View()
 		help = m.YearModel.Help.View(year.Keys)
-	}
-	if m.CurrentView == "new_event" {
+	case "new_event":
 		s = m.NewEventModel.View()
 	}
 

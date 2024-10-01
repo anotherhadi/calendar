@@ -24,12 +24,16 @@ func (m Model) Update(message tea.Msg) (Model, tea.Cmd) {
 		case key.Matches(msg, m.keys.NextMonth):
 			calendar.IncrementMonth(m.focusDay, m.focusMonth, m.focusYear, 1)
 		case key.Matches(msg, m.keys.NewEvent):
+			*m.focusDay = 1
 			return m, utils.ChangeFocusViewCmd("new_event")
 		case key.Matches(msg, m.keys.DayView):
+			*m.focusDay = 1
 			return m, utils.ChangeFocusViewCmd("day")
 		case key.Matches(msg, m.keys.WeekView):
+			*m.focusDay = 1
 			return m, utils.ChangeFocusViewCmd("week")
 		case key.Matches(msg, m.keys.MonthView):
+			*m.focusDay = 1
 			return m, utils.ChangeFocusViewCmd("month")
 		case key.Matches(msg, m.keys.Today):
 			*m.focusMonth, *m.focusYear = m.currentMonth, m.currentYear

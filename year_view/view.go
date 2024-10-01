@@ -36,6 +36,9 @@ func (m Model) drawMinimalCalendar(month, year int) string {
 			Render(time.Month(month).String()) +
 			"\n"
 	}
+	if m.height > 45 {
+		str += "\n"
+	}
 
 	daysInMonth := calendar.DaysInMonth(month, year)
 	startDay := calendar.DayOfWeek(1, month, year)

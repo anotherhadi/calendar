@@ -15,7 +15,11 @@ func (m Model) Update(message tea.Msg) (Model, tea.Cmd) {
 		m.height = msg.Height
 		m.form.WithWidth(msg.Width)
 		m.form.WithHeight(msg.Height - 4)
-		// return m, nil
+		return m, nil
+	case tea.KeyMsg:
+		if msg.String() == "esc" {
+			return m, utils.ChangeFocusViewCmd(m.previousView)
+		}
 	}
 
 	var cmd oldTea.Cmd

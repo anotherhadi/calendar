@@ -7,7 +7,12 @@ import (
 )
 
 func main() {
-	p := tea.NewProgram(initModel(), tea.WithAltScreen(), tea.WithMouseCellMotion())
+	p := tea.NewProgram(
+		initModel(),
+		tea.WithAltScreen(),
+		tea.WithMouseCellMotion(),
+		tea.WithReportFocus(),
+	)
 	if _, err := p.Run(); err != nil {
 		log.Fatal(err)
 	}

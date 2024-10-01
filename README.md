@@ -9,7 +9,7 @@ Calendar is a TUI app to manage your markdown-calendar.
 - [x] Month view
 - [x] Week view
 - [ ] Day view
-- [ ] Year view
+- [x] Year view
 - [!] Add events
 - [ ] Edit events
 - [ ] Remove events
