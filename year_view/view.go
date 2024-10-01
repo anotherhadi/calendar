@@ -17,10 +17,17 @@ func (m Model) drawMinimalCalendar(month, year int) string {
 	if month == *m.focusMonth && year == *m.focusYear {
 		str += lipgloss.NewStyle().
 			Foreground(purple.Colors.Accent).
+			Render("◖")
+		str += lipgloss.NewStyle().
+			Background(purple.Colors.Accent).
+			Foreground(purple.GetFgColor(purple.Colors.Accent)).
 			Align(lipgloss.Center).
-			Width(20).
-			Render(time.Month(month).String()) +
-			"\n"
+			Width(20 - 2).
+			Render(time.Month(month).String())
+		str += lipgloss.NewStyle().
+			Foreground(purple.Colors.Accent).
+			Render("◗")
+		str += "\n"
 	} else {
 		str += lipgloss.NewStyle().
 			Foreground(purple.Colors.LightGray).

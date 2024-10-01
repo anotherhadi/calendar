@@ -87,7 +87,7 @@ func (m Model) drawCalendar() string {
 						remaining := nevents - i
 						if remaining != 1 {
 							rows[row][col] += s.Foreground(purple.Colors.LightGray).
-								Width(cellWidth - 2).MaxHeight(1).Align(lipgloss.Center).
+								Width(cellWidth).MaxHeight(1).Align(lipgloss.Center).
 								Render(utils.TruncateString("+"+strconv.Itoa(remaining), cellWidth-2))
 							rows[row][col] += "\n"
 							break

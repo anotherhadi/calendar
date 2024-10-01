@@ -87,14 +87,9 @@ func (m Model) drawWeek() string {
 					if i*eventsSpacing >= cellHeight-3-(eventsSpacing-1) {
 						remaining := nevents - i
 						if remaining != 1 {
-							rows[row][col] += s.Foreground(purple.Colors.Gray).
-								Render("◖")
-							rows[row][col] += s.Background(purple.Colors.Gray).
-								Foreground(purple.GetFgColor(purple.Colors.Gray)).
-								Width(cellWidth - 2).MaxHeight(1).Align(lipgloss.Center).
+							rows[row][col] += s.Foreground(purple.Colors.LightGray).
+								Width(cellWidth).MaxHeight(1).Align(lipgloss.Center).
 								Render(utils.TruncateString("+"+strconv.Itoa(remaining), cellWidth-2))
-							rows[row][col] += s.Foreground(purple.Colors.Gray).
-								Render("◗")
 							rows[row][col] += strings.Repeat("\n", eventsSpacing)
 							break
 						}
